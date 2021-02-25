@@ -1,11 +1,12 @@
-
 const N_DOTS = 150;
 const BOUND_PAD = 50;
 
 let dots;
 
 function setup() {
-  createCanvas(750, 750);
+  createCanvas(1000, 1000);
+  
+  frameRate(60);
 
   dots = new Array(N_DOTS);
 
@@ -13,7 +14,6 @@ function setup() {
     dots[i] = new Dot(-width / 2, width / 2, -height / 2, height / 2);
   }
   
-  print(dot_distance(dots[0], dots[1]));
 }
 
 function draw() {
@@ -32,7 +32,7 @@ function draw() {
     dots[i].show();
 
     for (var j = i+1; j < N_DOTS; j++) {
-      let d = dot_distance(dots[i], dots[j]);
+      let d = distance(dots[i].x, dots[i].y, dots[j].x, dots[j].y);
 
       if (d < 100) {
         strokeWeight(min(3/sqrt(d), 3));
@@ -58,6 +58,14 @@ class Dot {
   }
 
   tick(timestep) {
+    let dist_to_mouse = distance(mouseX - height/2, mouseY  - width/2, this.x, this.y);
+    let angle = atan2(this.y - (mouseY - height/2), this.x - (mouseX - width/2));
+    
+    if (dist_to_mouse < 100){
+      this.vx += cos(angle) / dist_to_mouse * 100;
+      this.vy += sin(angle) / dist_to_mouse * 100;
+    }
+    
     this.x += this.vx * timestep;
     this.y += this.vy * timestep;
   }
@@ -71,9 +79,9 @@ class Dot {
   }
 }
 
-function dot_distance(d1, d2) {
-  let dx = d1.x - d2.x;
-  let dy = d1.y - d2.y;
+function distance(x1, y1, x2, y2) {
+  let dx = x1-x2;
+  let dy = y1-y2;
   return sqrt(dx*dx + dy*dy);
 }
 
